@@ -25,17 +25,20 @@ def lambda_handler(event, context):
 
    confirmed_df = pd.read_csv("/tmp/{}".format(confirmed_raw_csv_file))
    confirmed_df_melt = confirmed_df.melt(id_vars=["Province/State", "Country/Region", "Lat", "Long"], var_name="Date", value_name="Confirmed")
-
+   confirmed_df_melt['Date'] = confirmed_df_melt.Date.apply(lambda x: x + "20" if x.split('/')[-1] == "20" else x)
+   print(confirmed_df_melt.head())
    deaths_df = pd.read_csv("/tmp/{}".format(deaths_raw_csv_file))
    deaths_df_melt = deaths_df.melt(id_vars=["Province/State", "Country/Region", "Lat", "Long"], var_name="Date", value_name="Deaths")
-
+   deaths_df_melt['Date'] = deaths_df_melt.Date.apply(lambda x: x + "20" if x.split('/')[-1] == "20" else x)
+   print(deaths_df_melt.head())
    recovered_df = pd.read_csv("/tmp/{}".format(recovered_raw_csv_file))
    recovered_df_melt = recovered_df.melt(id_vars=["Province/State", "Country/Region", "Lat", "Long"], var_name="Date", value_name="Recovered")
+   recovered_df_melt['Date'] = recovered_df_melt.Date.apply(lambda x: x + "20" if x.split('/')[-1] == "20" else x)
+   print(recovered_df_melt.head())
+   
    join1_df = confirmed_df_melt.join(deaths_df_melt.set_index(["Province/State", "Country/Region", "Lat", "Long", "Date"]), on=["Province/State", "Country/Region", "Lat", "Long", "Date"])
-
    join2_df = join1_df.join(recovered_df_melt.set_index(["Province/State", "Country/Region", "Lat", "Long", "Date"]), on=["Province/State", "Country/Region", "Lat", "Long", "Date"])
-   join2_df['Date'] = join2_df.Date.apply(lambda x: x + "20")
-
+   
    s3 = boto3.client('s3')
    csv_buffer = csv_buffer = StringIO()
    join2_df.to_csv(csv_buffer, index=False, quoting=csv.QUOTE_NONNUMERIC)
