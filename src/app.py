@@ -5,9 +5,9 @@ from io import StringIO
 import csv
 import json
 
-confirmed_raw_csv_file = "time_series_19-covid-Confirmed.csv"
-deaths_raw_csv_file = "time_series_19-covid-Deaths.csv"
-recovered_raw_csv_file = "time_series_19-covid-Recovered.csv"
+confirmed_raw_csv_file = "time_series_covid19_confirmed_global.csv"
+deaths_raw_csv_file = "time_series_covid19_deaths_global.csv"
+recovered_raw_csv_file = "time_series_covid19_recovered_global.csv"
 
 def lambda_handler(event, context):
    r_confirmed = requests.get("https://raw.github.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/{}".format(confirmed_raw_csv_file))
